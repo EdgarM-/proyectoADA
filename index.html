@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es" ng-app="akariApp">
+	<head>
+	    <meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Akari Problem</title>
+		 <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+		 <link href="static/css/custom.css" rel="stylesheet">
+		 <script
+	src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.0-beta.11/angular.min.js"></script>		 	
+		 <script src="static/js/app.js"></script>	 
+	</head>
+	<body>
+		<div class="container">
+			<div class="jumbotron">
+				<div class="container">
+					<div class="page-header">
+  						<h1>Proyecto análisis y diseño de algoritmos<small> 2015-2</small></h1>
+  						<p>Santiago Quintero y Edgar Manuel Amézquita</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	<div class="container" ng-controller="akariController" >
+		<div class="panel panel-primary supanel">
+			<div class="panel-heading">Akari Matrix dimensions</div>
+			<div class="panel-body">
+				<form class="col-md-6" ng-submit="matCreate()" role="form">					
+					<input type="number" ng-model="cols" class="form-control" placeholder="Columns" value="" required autofocus>
+					<input type="number" ng-model="rows" class="form-control" placeholder="Rows" value="" required>
+									
+					<button class="btn btn-lg btn-primary btn-block" id="submit" type="submit" value="Submit">Crear Matriz</button>
+				</form>
+				<form class="col-md-6" ng-submit="matFile()" role="form">					
+					<input type="file" ng-model="file" class="form-control" value="Upload a file" required>
+									
+					<button class="btn btn-lg btn-primary btn-block" id="submit" type="submit" value="Submit">Cargar archivo{{ created }}</button>
+				</form>
+			</div>
+		</div>
+		<div class="container" ng-show="created">
+			<table>
+				<tr ng-repeat="row in matrix track by $index">
+					<td ng-repeat="col in row track by $index">
+						<input type="text" class="form-control"  value="" required>
+					</td>			
+				</tr>
+			</table> 
+			
+		</div>
+	</div>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	</body>
+</html>
