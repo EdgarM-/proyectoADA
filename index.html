@@ -39,15 +39,17 @@
 				</form>
 			</div>
 		</div>
-		<div class="container" ng-show="created">
+		<div ng-show="created">
 			<table>
 				<tr ng-repeat="row in matrix track by $index">
 					<td ng-repeat="col in row track by $index">
-						<input type="text" class="form-control"  value="" required>
+						<input type="number" class="form-control" ng-model="matrix[$parent.$index][$index]" value="" required>
 					</td>			
 				</tr>
-			</table> 
-			
+			</table>
+			<div class="text-right">
+				<button class="btn btn-lg btn-primary" ng-click="solveAkari()">Resolver</button>
+			</div>
 		</div>
 	</div>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>

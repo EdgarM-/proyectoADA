@@ -16,4 +16,22 @@ app.controller("akariController",[ '$scope', function($scope){
 		console.log($scope.file);
 	};
 	
+	var solverFour = function()
+	{
+		var len = $scope.matrix.length;
+		for (var i = len - 1; i >= 0; i--) {
+			for (var j = len - 1; j >= 0; j--) {
+				if($scope.matrix[i][j])
+				{
+					
+				}
+			}
+		}
+	};
+
+	$scope.solveAkari = function()
+	{
+		console.log($scope.matrix);
+	};
+
 }]);
