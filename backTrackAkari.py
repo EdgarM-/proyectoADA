@@ -188,14 +188,14 @@ class AkariBacktracking:
 				if result != -1:
 					return result
 				#Reviso si iluminar esa casilla altera algun numero que esta en la fila de arriba o de abajo o izquierda o derecha o una columna a la izquierda o una columna derecha
-				up = self.checkUp(mx,my)
-				down = self.checkDown(mx,my)
-				rightcol = self.checkRightCol(mx,my)
-				leftcol = self.checkLeftCol(mx,my)
-				right = self.checkRight(mx,my)
-				left = self.checkLeft(mx,my)
-				if (up and down and right and left and rightcol and leftcol):
-					return 1
+				#up = self.checkUp(mx,my)
+				#down = self.checkDown(mx,my)
+				#rightcol = self.checkRightCol(mx,my)
+				#leftcol = self.checkLeftCol(mx,my)
+				#right = self.checkRight(mx,my)
+				#left = self.checkLeft(mx,my)
+				#if (up and down and right and left and rightcol and leftcol):
+				return 1
 				#Como se revisa primero si se puede quedar blanca y ahora se revisa que se pueda poner bombillo y no se puede ningua toca devolverse
 				#else:
 				#	return -2
