@@ -1,3 +1,4 @@
+# coding: utf-8
 # Santiago Quintero
 # Edgar Amezquita
 """                                     
@@ -47,6 +48,7 @@ class AkariBacktracking:
 		data = [int(x) for x in data]
 		self.x = data[0]
 		self.y = data[1]
+		self.bulbs = []
 		self.matrix = []
 		for x in range(data[0]):
 			tmp = [int(x) for x in file.readline().split(" ")]
@@ -79,10 +81,14 @@ class AkariBacktracking:
 		return True
 	#Revisa que pasa si ilumino la posicion y me dice si afecta a algun numero en la columna de la derecha	
 	def checkRightCol(self,mx,my):
-		return (self.checkUp(mx,my+1) and self.checkDown(mx,my+1))
+		if (my < self.y - 1):
+			return (self.checkUp(mx,my+1) and self.checkDown(mx,my+1))
+		return True
 	#Revisa que pasa si ilumino la posicion y me dice si afecta a algun numero en la columna de la izquierda
 	def checkLeftCol(self,mx,my):
-		return (self.checkUp(mx,my-1) and self.checkDown(mx,my-1))
+		if (my > 0):
+			return (self.checkUp(mx,my-1) and self.checkDown(mx,my-1))
+		return True
 	#Revisa que pasa si ilumino la posicion y me dice si afecta a algun numero hacia la derecha
 	def checkRight(self,mx,my):
 		for y in range(my, self.y):
@@ -114,9 +120,9 @@ class AkariBacktracking:
 		if(self.check(mx,my-1) == 1):
 			countBulbs += 1
 		if( countBulbs == self.matrix[mx][my] ):
-			return False
-		else:
 			return True
+		else:
+			return False
 	def checkNumber(self,mx,my):
 		#Reviso que se pueda completar la cantidad de bombillos que pueden estar cerca del numero
 		countBulbsAndBlanks = 2
@@ -133,17 +139,33 @@ class AkariBacktracking:
 		else:
 			return False
 	
-	def functionT(self,mx,my, dir):	# la funcionT devuelve 0 o 1, devuelve 0 si ya habia bombillo, dir le indica si esta avanzando(1) o devolviendo(-1)
-		posiciones = []
+	def functionT(self,mx,my):	# la funcionT devuelve 0 o 1, devuelve 0 no es una casilla iluminable
 		if (mx >= 0 and mx < self.x and my >= 0 and my < self.y):
-			if (self.matrix[mx][my] == 1):
-				posiciones.append(0)
-			elif(dir == 1) :
-				posiciones = [0, 1]
-			elif(dir == -1):
-				posiciones = [1,0]
-		return posiciones
-	
+			if (self.matrix[mx][my] == 0):
+				return 1
+		return 0
+
+	# Revisar si la celda es numerada y si no esta llena
+	# -1 significa que revise la siguiente
+	def checkNumberedCell(self, mx, my):
+		if mx >= 0 and mx < self.x and my >= 0 and my < self.y:
+			if(self.matrix[mx][my] == 7):
+				return 1
+			elif(self.matrix[mx][my] == 3):
+				return 0
+			elif(self.matrix[mx][my] >= 4 and self.matrix[mx][my] <= 6):
+				if (self.isNumberFull(mx,my)):
+					return 0
+		return -1
+
+	# Revisa si la matris esta totalmente ilumunada o hay espacios sin iluminar
+	def checkIlumination(self):
+		for x in range(0,self.x):
+			for y in range(0,self.y):
+				if self.matrix[x][y] == 0:
+					return False
+		return True
+
 	#Convenciones Funcion B
 	# 1 Puede hacer la acción
 	# 0 No puede hacer la acción
@@ -153,33 +175,18 @@ class AkariBacktracking:
 		if(valor == 1):
 			if(self.matrix[mx][my] == 0):
 				#Reviso si hay numero alrededor
-				if(self.matrix[mx+1][my] == 7):
-					return 1
-				elif(self.matrix[mx+1][my] == 3):
-					return 0
-				elif(self.matrix[mx+1][my] == 4 or self.matrix[mx+1][my] == 5 or self.matrix[mx+1][my] == 6):
-					return self.isNumberFull(mx+1,my)
-					
-				if(self.matrix[mx-1][my] == 7):
-					return 1
-				elif(self.matrix[mx-1][my] == 3):
-					return 0
-				elif(self.matrix[mx-1][my] == 4 or self.matrix[mx-1][my] == 5 or self.matrix[mx-1][my] == 6):
-					return self.isNumberFull(mx-1,my)
-				
-				if(self.matrix[mx][my+1] == 7):
-					return 1
-				elif(self.matrix[mx][my+1] == 3):
-					return 0
-				elif(self.matrix[mx][my+1] == 4 or self.matrix[mx][my+1] == 5 or self.matrix[mx][my+1] == 6):
-					return self.isNumberFull(mx,my+1)
-				
-				if(self.matrix[mx][my-1] == 7):
-					return 1
-				elif(self.matrix[mx][my-1] == 3):
-					return 0
-				elif(self.matrix[mx][my-1] == 4 or self.matrix[mx][my-1] == 5 or self.matrix[mx][my-1] == 6):
-					return self.isNumberFull(mx,my-1)
+				result = self.checkNumberedCell(mx+1, my)
+				if result != -1:
+					return result
+				result = self.checkNumberedCell(mx-1, my)
+				if result != -1:
+					return result
+				result = self.checkNumberedCell(mx, my+1)
+				if result != -1:
+					return result
+				result = self.checkNumberedCell(mx, my-1)
+				if result != -1:
+					return result
 				#Reviso si iluminar esa casilla altera algun numero que esta en la fila de arriba o de abajo o izquierda o derecha o una columna a la izquierda o una columna derecha
 				up = self.checkUp(mx,my)
 				down = self.checkDown(mx,my)
@@ -190,62 +197,15 @@ class AkariBacktracking:
 				if (up and down and right and left and rightcol and leftcol):
 					return 1
 				#Como se revisa primero si se puede quedar blanca y ahora se revisa que se pueda poner bombillo y no se puede ningua toca devolverse
-				else:
-					return -2
+				#else:
+				#	return -2
 			#Como no la puedo modificar sigo adelante
-			elif(self.matrix[mx][my] > 0):
-				return -1
-			
-		else:
-			if(self.matrix[mx][my] == 0 or self.matrix[mx][my] == 1):
-				#Reviso si hay un numero alrededor y si dejandola sin bombillo esta puede alcanzar el numero necesario de bombillos
-				if(self.matrix[mx+1][my] == 3):
-					return 1
-				elif(self.matrix[mx+1][my] == 7):
-					return 0				
-				elif(self.matrix[mx+1][my] == 4 or self.matrix[mx+1][my] == 5 or self.matrix[mx+1][my] == 6):
-					return self.checkNumber(mx+1,my)
-					
-				if(self.matrix[mx-1][my] == 3):
-					return 1
-				elif(self.matrix[mx+1][my] == 7):
-					return 0
-				elif(self.matrix[mx-1][my] == 4 or self.matrix[mx-1][my] == 5 or self.matrix[mx-1][my] == 6):
-					return self.checkNumber(mx-1,my)
-				
-				if(self.matrix[mx][my+1] == 3):
-					return 1
-				elif(self.matrix[mx+1][my] == 7):
-					return 0
-				elif(self.matrix[mx][my+1] == 4 or self.matrix[mx][my+1] == 5 or self.matrix[mx][my+1] == 6):
-					return self.checkNumber(mx,my+1)
-									
-				if(self.matrix[mx][my-1] == 3):
-					return 1
-				elif(self.matrix[mx+1][my] == 7):
-					return 0
-				elif(self.matrix[mx][my-1] == 4 or self.matrix[mx][my-1] == 5 or self.matrix[mx][my-1] == 6):
-					return self.checkNumber(mx,my-1)	
-				#Como no hay ningun numero lo podemos quitar y devolvernos
-				if(self.matrix[mx][my] == 1):
-					return -2
-				#Reviso si no esta iluminado y esta en la ultima fila y puede ser un bombillo, si no puede se devuelve			
-				if(mx == self.x and self.matrix[mx][my] == 0 and self.functionB(1,mx,my) == 1):
-					return 0
-				else:
-					return -2
-				#Reviso si la posicion de arriba esta iluminada y si puede ser bombillo, si no puede se devuelve porque falta iluminación
-				if(self.check(mx,my) == 0 and self.functionB(1,mx,my) == 1):
-					return 0
-				else:
-					return -2
-			else:
-				return -1		
-			
+		return -1	
 				
 
 	def iluminate(self, mx, my):
 		self.matrix[mx][my] = 1
+		self.bulbs.append((mx,my))
 		# mark with 9 up
 		for x in range(mx,-1,-1):
 			if self.matrix[x][my] >= 2 and self.matrix[x][my] <= 7:
@@ -300,7 +260,8 @@ class AkariBacktracking:
 			
 		
 	
-	def deIluminate(self, mx, my):
+	def deIluminate(self):
+		mx, my = self.bulbs.pop()
 		self.matrix[mx][my] = 0
 		# mark with 0 up
 		for x in range(mx,-1,-1):
@@ -326,43 +287,30 @@ class AkariBacktracking:
 				break
 			if self.matrix[mx][y] == 9 and self.checkOtherIlumination(mx,y,mx,my):
 				self.matrix[mx][y] = 0
+		return (mx,my)
 				
 	def backtracking(self):
-		dir = 1
 		x = y = 0
 		while(x < self.x):
-			y = 0
+			if (y == self.y):
+				y = 0
 			while(y < self.y):
-				opciones = self.functionT(x,y,dir)
-				for valor in opciones:
-					res = self.functionB(valor,x,y)
-					if(res == 1 and valor == 1):
-						self.iluminate(x,y)
-						y += 1				
-						dir = 1		
-						break
-					if(res == 1 and valor == 0 and self.matrix[x][y] == 1):
-						self.deIluminate(x,y)
-						y -= 1
-						break
-					if(res == 0):
-						continue
-					if(res == -1 and dir == 1):
-						y += 1
-						break
-					if(res == -1 and dir == -1):
-						y -= 1
-						break
-					if(res == -2):
-						dir = -1
-						y -= 1
-						break
-					if(y < 0):
-						x -= 1
-						break
-				if(y < 0):
-					break
+				opcion = self.functionT(x,y)
+				#for valor in opciones:
+				res = self.functionB(opcion,x,y)
+				if(res == 1):
+					self.iluminate(x,y)
+				y += 1
+				if (x+1 == self.x and y == self.y):
+					if (not self.checkIlumination()):
+						if (self.bulbs):
+							x,y = self.deIluminate()
+							y += 1
+						else:
+							print ("No hay solucion")
 			x+=1
+			
+
 	def printMatrix(self,text):
 		print ("")
 		print ("=================["+text+"]=====================")
